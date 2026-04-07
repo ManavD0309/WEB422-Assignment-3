@@ -6,9 +6,9 @@
 * 
 *  https://www.senecapolytechnic.ca/about/policies/academic-integrity-policy.html
 * 
-*  Name: Manav Dhameliya  Student ID: 184861235  Date: __________________
+*  Name: Manav Dhameliya  Student ID: 184861235  Date: 6th April 2026
 *
-*  Published URL (of the API) on Vercel:  _________________________________
+*  Published URL (of the API) on Vercel:  https://web-422-assignment-3-smoky.vercel.app/
 *
 ********************************************************************************/
 
@@ -23,7 +23,7 @@ const passportJWT = require("passport-jwt");
 const app = express();
 const HTTP_PORT = 8080;
 
-// JWT Strategy Setup
+
 const ExtractJwt = passportJWT.ExtractJwt;
 const JwtStrategy = passportJWT.Strategy;
 
@@ -58,7 +58,7 @@ app.get("/", (req, res) => {
   });
 });
 
-
+// PUBLIC ROUTES
 app.get("/api/sites", async (req, res) => {
   try {
     const {
@@ -83,7 +83,7 @@ app.get("/api/sites", async (req, res) => {
 
     res.json(sites);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: err.message || err });
   }
 });
 
@@ -97,11 +97,11 @@ app.get("/api/sites/:id", async (req, res) => {
 
     res.json(site);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: err.message || err });
   }
 });
 
-
+// PROTECTED ROUTES
 app.post(
   "/api/sites",
   passport.authenticate("jwt", { session: false }),
@@ -110,7 +110,7 @@ app.post(
       const newSite = await dataService.addNewSite(req.body);
       res.status(201).json(newSite);
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: err.message || err });
     }
   }
 );
@@ -128,7 +128,7 @@ app.put(
 
       res.status(204).end();
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: err.message || err });
     }
   }
 );
@@ -146,11 +146,12 @@ app.delete(
 
       res.status(204).end();
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: err.message || err });
     }
   }
 );
 
+// USER ROUTES
 app.post("/api/user/register", (req, res) => {
   dataService
     .registerUser(req.body)
@@ -158,7 +159,9 @@ app.post("/api/user/register", (req, res) => {
       res.json({ message: msg });
     })
     .catch((msg) => {
-      res.status(422).json({ message: msg });
+      res.status(422).json({
+        message: msg?.message || msg || "Unable to register user",
+      });
     });
 });
 
@@ -179,7 +182,9 @@ app.post("/api/user/login", (req, res) => {
       });
     })
     .catch((msg) => {
-      res.status(422).json({ message: msg });
+      res.status(422).json({
+        message: msg?.message || msg || "Unable to login",
+      });
     });
 });
 
@@ -193,7 +198,9 @@ app.get(
         res.json(data);
       })
       .catch((msg) => {
-        res.status(422).json({ error: msg });
+        res.status(422).json({
+          error: msg?.message || msg || "Unable to get favourites",
+        });
       });
   }
 );
@@ -208,7 +215,9 @@ app.put(
         res.json(data);
       })
       .catch((msg) => {
-        res.status(422).json({ error: msg });
+        res.status(422).json({
+          error: msg?.message || msg || "Unable to add favourite",
+        });
       });
   }
 );
@@ -223,7 +232,9 @@ app.delete(
         res.json(data);
       })
       .catch((msg) => {
-        res.status(422).json({ error: msg });
+        res.status(422).json({
+          error: msg?.message || msg || "Unable to remove favourite",
+        });
       });
   }
 );
